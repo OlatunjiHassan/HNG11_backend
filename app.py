@@ -1,3 +1,7 @@
+
+# A very simple Flask Hello World app for you to get started with...
+
+
 from flask import Flask, request, jsonify
 import requests
 import os
@@ -12,13 +16,10 @@ def hello_world():
 def home_page():
     return "<h1>This is the home page</h1>"
 
-@app.route("/api/hello")
+@app.route("/api/hello", methods=['GET'])
 def hello_page():
-    return "<h1>This is the hello page</h1>"
-
-@app.route("/api/hello/<visitor_name>", methods=['GET'])
-def get_info(visitor_name):
-    client_ip = request.remote_addr
+    visitor_name = request.args.get("visitor_name")
+    client_ip = request.headers.get('X-Forwarded-For')
     # client_ip = "102.89.33.219"
     url_ip_api = f"http://ip-api.com/json/{client_ip}?fields=status,message,country,regionName,city,lat,lon"
     location_response = requests.get(url_ip_api)
@@ -43,12 +44,12 @@ def get_info(visitor_name):
     degree = weather_data["main"]['temp']
 
     greeting = f"Hello {visitor_name}!, the temperature is {degree} degrees Celcius in {city}"
-    return jsonify({
+    return {
         "client_ip": client_ip,
         "location": city,
         "greeting": greeting
-    })
+    }
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.run(debug=True)
